@@ -1,172 +1,203 @@
 from utils import limpar_tela
-medicos = []
+from database import conectar
+from mysql.connector import Error
 
 def cadastrar_medico():
+    limpar_tela()
     print("\n--- Cadastro de Novo Médico ---")
     nome = input("Nome do médico: ")
     crm = input("CRM do médico: ")
-    for medico in medicos:
-        if medico['crm'] == crm:
-            print("Erro: Já existe um médico cadastrado com este CRM.")
-            return
-
     especialidade = input("Especialidade: ")
-    print("Informe os horários de atendimento (ex: Seg 08h-12h, Ter 14h-18h):")
-    horarios = input("Horários: ")
+    horarios = input("Horários de atendimento (ex: Seg 08h-12h): ")
 
-    medico = {
-        'nome': nome,
-        'crm': crm,
-        'especialidade': especialidade,
-        'horarios': horarios
-    }
-    medicos.append(medico)
-    print(f"Médico {nome} cadastrado com sucesso!")
+    conexao = None
+    cursor = None
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        sql = "INSERT INTO medicos (crm, nome, especialidade, horarios) VALUES (%s, %s, %s, %s)"
+        dados = (crm, nome, especialidade, horarios)
+        cursor.execute(sql, dados)
+        
+        conexao.commit()
+        print(f"Médico {nome} cadastrado com sucesso!")
+
+    except Error as e:
+        if e.errno == 1062: # erro de entrada duplicada
+            print("Erro: Já existe um médico cadastrado com este CRM.")
+        else:
+            print(f"Erro ao cadastrar médico: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexao and conexao.is_connected():
+            conexao.close()
+    
+    input("\nPressione Enter para continuar...")
 
 def consultar_medicos():
+    limpar_tela()
     print("\n--- Consulta de Médicos ---")
-    if not medicos:
-        print("Nenhum médico cadastrado no sistema.")
-        return
-
     crm_busca = input("Digite o CRM do médico para buscar (ou deixe em branco para listar todos): ")
 
-    encontrou_medico = False
-    for medico in medicos:
-        if not crm_busca or medico['crm'] == crm_busca:
-            print("\n-------------------------")
-            print(f"Nome: {medico['nome']}")
-            print(f"CRM: {medico['crm']}")
-            print(f"Especialidade: {medico['especialidade']}")
-            print(f"Horários: {medico['horarios']}")
-            print("-------------------------")
-            encontrou_medico = True
-            if crm_busca: # Se buscou por CRM específico, para após encontrar
-                break
-    
-    if not encontrou_medico and crm_busca:
-        print(f"Nenhum médico encontrado com o CRM {crm_busca}.")
-    elif not crm_busca and not medicos: # Caso tenha entrado no if not medicos e depois aqui
-        pass # Mensagem já foi dada
-    elif not encontrou_medico and not crm_busca and medicos: # Listou todos, não precisa de msg de erro
-        pass
+    conexao = None
+    cursor = None
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
 
+        sql = "SELECT crm, nome, especialidade, horarios FROM medicos WHERE ativo IS TRUE"
+
+        if crm_busca:
+            sql += " AND crm = %s"
+            cursor.execute(sql, (crm_busca,))
+        else:
+            sql += " ORDER BY nome"
+            cursor.execute(sql)
+        
+        lista_medicos = cursor.fetchall()
+
+        if not lista_medicos:
+            print(f"Nenhum médico encontrado.")
+        else:
+            for medico in lista_medicos:
+                print("\n-------------------------")
+                # Acesso por índice numérico
+                print(f"Nome: {medico[1]}")
+                print(f"CRM: {medico[0]}")
+                print(f"Especialidade: {medico[2]}")
+                print(f"Horários: {medico[3]}")
+                print("-------------------------")
+
+    except Error as e:
+        print(f"Erro ao consultar médicos: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexao and conexao.is_connected():
+            conexao.close()
+
+    input("\nPressione Enter para continuar...")
 
 def atualizar_medico():
+    limpar_tela()
     print("\n--- Atualização de Médico ---")
-    if not medicos:
-        print("Nenhum médico cadastrado para atualizar.")
-        return
-
     crm_atualizar = input("Digite o CRM do médico que deseja atualizar: ")
-    
-    medico_encontrado = None
-    indice_medico = -1
 
-    for i, medico in enumerate(medicos):
-        if medico['crm'] == crm_atualizar:
-            medico_encontrado = medico
-            indice_medico = i
-            break
+    conexao = None
+    cursor = None
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
 
-    if medico_encontrado:
-        print("\nInformações atuais do médico:")
-        print(f"1. Nome: {medico_encontrado['nome']}")
-        print(f"2. Especialidade: {medico_encontrado['especialidade']}")
-        print(f"3. Horários: {medico_encontrado['horarios']}")
-        # CRM não é usualmente alterado, mas pode ser adicionado se necessário.
+        cursor.execute("SELECT crm, nome, especialidade, horarios FROM medicos WHERE crm = %s AND ativo IS TRUE", (crm_atualizar,))
+        medico_atual = cursor.fetchone()
 
-        while True:
-            try:
-                campo_escolha = int(input("Qual informação deseja atualizar? (Digite o número ou 0 para cancelar): "))
-                if 0 <= campo_escolha <= 3:
-                    break
-                else:
-                    print("Opção inválida. Tente novamente.")
-            except ValueError:
-                print("Entrada inválida. Digite um número.")
-        
-        if campo_escolha == 0:
-            print("Atualização cancelada.")
+        if not medico_atual:
+            print("Médico não encontrado ou inativo.")
+            input("Pressione Enter para continuar...")
             return
 
-        if campo_escolha == 1:
-            novo_nome = input(f"Novo nome (anterior: {medico_encontrado['nome']}): ")
-            medicos[indice_medico]['nome'] = novo_nome if novo_nome else medico_encontrado['nome']
-        elif campo_escolha == 2:
-            nova_especialidade = input(f"Nova especialidade (anterior: {medico_encontrado['especialidade']}): ")
-            medicos[indice_medico]['especialidade'] = nova_especialidade if nova_especialidade else medico_encontrado['especialidade']
-        elif campo_escolha == 3:
-            novos_horarios = input(f"Novos horários (anterior: {medico_encontrado['horarios']}): ")
-            medicos[indice_medico]['horarios'] = novos_horarios if novos_horarios else medico_encontrado['horarios']
-        
+        print("\nDeixe em branco para manter o valor atual.")
+        nome = input(f"Novo nome ({medico_atual[1]}): ") or medico_atual[1]
+        especialidade = input(f"Nova especialidade ({medico_atual[2]}): ") or medico_atual[2]
+        horarios = input(f"Novos horários ({medico_atual[3]}): ") or medico_atual[3]
+
+        sql = """
+            UPDATE medicos 
+            SET nome = %s, especialidade = %s, horarios = %s
+            WHERE crm = %s
+        """
+        dados = (nome, especialidade, horarios, crm_atualizar)
+        cursor.execute(sql, dados)
+        conexao.commit()
+
         print("Informações do médico atualizadas com sucesso!")
-    else:
-        print(f"Médico com CRM {crm_atualizar} não encontrado.")
+
+    except Error as e:
+        print(f"Erro ao atualizar médico: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexao and conexao.is_connected():
+            conexao.close()
+    
+    input("\nPressione Enter para continuar...")
 
 def remover_medico():
-    print("\n--- Remoção de Médico ---")
-    if not medicos:
-        print("Nenhum médico cadastrado para remover.")
-        return
+    limpar_tela()
+    print("\n--- Inativar Médico ---")
+    crm_remover = input("Digite o CRM do médico que deseja inativar: ")
 
-    crm_remover = input("Digite o CRM do médico que deseja remover: ")
+    conexao = None
+    cursor = None
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
 
-    medico_encontrado = None
-    indice_medico = -1
-
-    for i, medico in enumerate(medicos):
-        if medico['crm'] == crm_remover:
-            medico_encontrado = medico
-            indice_medico = i
-            break
-            
-    if medico_encontrado:
-        print("\nInformações do médico a ser removido:")
-        print(f"Nome: {medico_encontrado['nome']}")
-        print(f"CRM: {medico_encontrado['crm']}")
-        print(f"Especialidade: {medico_encontrado['especialidade']}")
+        sql = "UPDATE medicos SET ativo = FALSE WHERE crm = %s"
+        cursor.execute(sql, (crm_remover,))
         
-        confirmacao = input("Tem certeza que deseja remover este médico? (s/n): ").lower()
-        if confirmacao == 's':
-            medicos.pop(indice_medico)
-            print(f"Médico {medico_encontrado['nome']} removido com sucesso.")
+        conexao.commit()
+
+        if cursor.rowcount > 0:
+            print(f"Médico com CRM {crm_remover} inativado com sucesso.")
         else:
-            print("Remoção cancelada.")
-    else:
-        print(f"Médico com CRM {crm_remover} não encontrado.")
+            print("Nenhum médico encontrado com o CRM fornecido.")
+
+    except Error as e:
+        print(f"Erro ao inativar médico: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexao and conexao.is_connected():
+            conexao.close()
+            
+    input("\nPressione Enter para continuar...")
 
 def get_medico_por_crm(crm):
-    for medico in medicos:
-        if medico['crm'] == crm:
-            return medico
-    return None
+    conexao = None
+    cursor = None
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+        
+        sql = "SELECT crm, nome, especialidade, horarios FROM medicos WHERE crm = %s AND ativo IS TRUE"
+        cursor.execute(sql, (crm,))
+        medico = cursor.fetchone()
+        return medico
+    except Error as e:
+        print(f"Erro ao buscar médico: {e}")
+        return None
+    finally:
+        if cursor:
+            cursor.close()
+        if conexao and conexao.is_connected():
+            conexao.close()
 
 def menu():
     while True:
+        limpar_tela()
         print("--- Clínica Médica - Gerenciamento de Médicos ---")
         print("1. Cadastrar Médico")
         print("2. Consultar Médico(s)")
         print("3. Atualizar Médico")
-        print("4. Remover Médico")
-        print("5. Sair")
+        print("4. Inativar Médico")
+        print("5. Voltar ao menu principal")
 
         escolha = input("Escolha uma opção: ")
 
         if escolha == '1':
-            limpar_tela()
             cadastrar_medico()
         elif escolha == '2':
-            limpar_tela()
             consultar_medicos()
         elif escolha == '3':
-            limpar_tela()
             atualizar_medico()
         elif escolha == '4':
-            limpar_tela()
             remover_medico()
         elif escolha == '5':
-            print("Saindo do sistema...")
             break
         else:
             print("Opção inválida. Tente novamente.")
+            input("Pressione Enter para continuar...")
