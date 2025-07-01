@@ -1,6 +1,6 @@
 from utils import limpar_tela
-import pacientes
-import medicos
+import ui.tela_pacientes as tela_pacientes
+import ui.tela_medicos as tela_medicos
 from database import conectar
 from mysql.connector import Error
 from datetime import datetime
@@ -209,26 +209,26 @@ def excluir_consulta():
 
 def obter_paciente_por_cpf():
     cpf = input("CPF do paciente: ").strip()
-    paciente = pacientes.get_paciente_por_cpf(cpf)
+    paciente = tela_pacientes.get_paciente_por_cpf(cpf)
     if not paciente:
         print("Paciente não encontrado.")
         opcao = input("Deseja cadastrar esse paciente? (s/n): ").strip().lower()
         if opcao == 's':
-            pacientes.cadastrar_paciente()
-            paciente = pacientes.get_paciente_por_cpf(cpf)
+            tela_pacientes.cadastrar_paciente()
+            paciente = tela_pacientes.get_paciente_por_cpf(cpf)
             if not paciente:
                 print("Erro ao cadastrar paciente.")
     return paciente
 
 def obter_medico_por_crm():
     crm = input("CRM do médico responsável: ").strip()
-    medico = medicos.get_medico_por_crm(crm)
+    medico = tela_medicos.get_medico_por_crm(crm)
     if not medico:
         print("Médico não encontrado.")
         opcao = input("Deseja cadastrar esse médico? (s/n): ").strip().lower()
         if opcao == 's':
-            medicos.cadastrar_medico()
-            medico = medicos.get_medico_por_crm(crm)
+            tela_medicos.cadastrar_medico()
+            medico = tela_medicos.get_medico_por_crm(crm)
             if not medico:
                 print("Erro ao cadastrar médico.")
     return medico

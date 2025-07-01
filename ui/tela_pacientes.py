@@ -4,11 +4,7 @@ from mysql.connector import Error
 from utils import limpar_tela
 from datetime import datetime
 
-def _exibir_lista_pacientes():
-    """
-    Função interna para buscar e exibir a lista de pacientes.
-    Retorna True se pacientes foram encontrados, False caso contrário.
-    """
+def exibir_lista_pacientes():
     conexao = None
     cursor = None
     try:
@@ -40,14 +36,14 @@ def _exibir_lista_pacientes():
 
 def listar_pacientes():
     limpar_tela()
-    _exibir_lista_pacientes()
+    exibir_lista_pacientes()
     print("")
     input("Pressione Enter para voltar ao menu...")
     limpar_tela()
 
 def editar_paciente():
     limpar_tela()
-    if not _exibir_lista_pacientes():
+    if not exibir_lista_pacientes():
         input("\nPressione Enter para voltar ao menu...")
         limpar_tela()
         return
@@ -102,7 +98,7 @@ def editar_paciente():
 
 def excluir_paciente():
     limpar_tela()
-    if not _exibir_lista_pacientes():
+    if not exibir_lista_pacientes():
         input("\nPressione Enter para voltar ao menu...")
         limpar_tela()
         return
