@@ -1,0 +1,41 @@
+CREATE DATABASE IF NOT EXISTS clinica_medica;
+USE clinica_medica;
+
+CREATE TABLE pacientes (
+    cpf VARCHAR(14) NOT NULL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    nascimento DATE,
+    telefone VARCHAR(20),
+    endereco VARCHAR(255),
+    ativo BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE medicos (
+    crm VARCHAR(20) NOT NULL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    especialidade VARCHAR(100),
+    horarios VARCHAR(255),
+    ativo BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE consultas (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    paciente_cpf VARCHAR(14) NOT NULL,
+    medico_crm VARCHAR(20) NOT NULL,
+    data_consulta DATE,
+    horario_consulta TIME,
+    observacoes TEXT,
+    ativo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (paciente_cpf) REFERENCES pacientes(cpf),
+    FOREIGN KEY (medico_crm) REFERENCES medicos(crm)
+);
+
+CREATE TABLE usuarios (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(100) NOT NULL,
+    tipo ENUM('administrador', 'medico') NOT NULL,
+    medico_crm VARCHAR(20),
+    ativo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (medico_crm) REFERENCES medicos(crm)
+);
