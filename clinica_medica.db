@@ -39,3 +39,7 @@ CREATE TABLE usuarios (
     ativo BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (medico_crm) REFERENCES medicos(crm)
 );
+
+--usuario admin fixo
+INSERT INTO usuarios (email, senha, tipo, medico_crm)
+VALUES ('admin@clinica.com', 'admin', 'administrador', NULL);
