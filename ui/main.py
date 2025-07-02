@@ -6,6 +6,12 @@ from database import conectar
 from tela_home_medico import abrir_tela_medico
 from tela_home_adm import abrir_tela_admin
 
+#INTEGRANTES:
+
+#DEBORAH DE OLIVEIRA GOULART - 1230112548
+#GUILHERME MONTEIRO DE OLIVEIRA - 1230113382
+#GUSTAVO FERNANDES BARBOSA - 1230116985
+
 COR_FUNDO = "#FFFFFF"
 COR_PRINCIPAL = "#2E8B57"
 COR_TEXTO = "#000000"
