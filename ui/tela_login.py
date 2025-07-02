@@ -44,7 +44,6 @@ def fazer_login():
         if usuario:
             janela.destroy()
 
-            janela.destroy() 
             if usuario['tipo'] == 'administrador':
                 abrir_tela_admin(usuario['id'])
             
