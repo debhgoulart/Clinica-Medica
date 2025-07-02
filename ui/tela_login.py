@@ -5,7 +5,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from database import conectar
 from tela_home_medico import abrir_tela_medico
-from tela_home_adm import abrir_tela_home_adm
+from tela_home_adm import abrir_tela_admin
 
 # --- CONSTANTES DE ESTILO ---
 COR_FUNDO = "#FFFFFF"
