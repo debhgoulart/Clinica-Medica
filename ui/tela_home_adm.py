@@ -115,6 +115,7 @@ def abrir_tela_admin(id_usuario_admin):
         font=("Arial", 12, "bold"),
         command=lambda: abrir_tela_gerenciar_consultas(janela)
     )
+    
     btn_gerenciar_consultas.place(x=20, y=550, width=210, height=40)
 
     main_content = tk.Frame(janela, bg="#f0f0f0", width=750, height=600)

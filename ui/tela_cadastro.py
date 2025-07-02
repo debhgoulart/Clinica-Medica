@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from database import conectar
+import mysql.connector
 
 COR_FUNDO = "#FFFFFF"
 COR_PRINCIPAL = "#2E8B57"
