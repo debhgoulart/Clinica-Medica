@@ -3,6 +3,9 @@ from tkinter import ttk, messagebox
 from datetime import datetime
 from database import conectar
 
+from tela_gerenciar_pacientes import abrir_tela_gerenciar_pacientes
+from tela_gerenciar_consultas import abrir_tela_gerenciar_consultas
+
 def buscar_info_admin(id_usuario):
     conexao = conectar()
     if conexao is None:
@@ -72,7 +75,7 @@ def desmarcar_consulta_db(id_consulta):
             cursor.close()
             conexao.close()
 
-def criar_tela_admin(id_usuario_admin):
+def abrir_tela_admin(id_usuario_admin):
     janela = tk.Tk()
     janela.title("Painel do Administrador")
     janela.geometry("1000x600")
@@ -82,7 +85,7 @@ def criar_tela_admin(id_usuario_admin):
     sidebar = tk.Frame(janela, bg="#1565c0", width=250, height=600)
     sidebar.place(x=0, y=0)
 
-    label_icone = tk.Label(sidebar, text="⚙", font=("Arial", 80), bg="#1565c0", fg="white")
+    label_icone = tk.Label(sidebar, text="+", font=("Arial", 80), bg="#1565c0", fg="white")
     label_icone.place(relx=0.5, y=90, anchor="center")
 
     admin_info = buscar_info_admin(id_usuario_admin)
@@ -93,6 +96,26 @@ def criar_tela_admin(id_usuario_admin):
 
     label_funcao = tk.Label(sidebar, text="Administrador", bg="#1565c0", fg="white", font=("Arial", 12, "italic"))
     label_funcao.place(x=10, y=210, width=230)
+
+    btn_gerenciar_pacientes = tk.Button(
+        sidebar,
+        text="Gerenciar Pacientes",
+        bg="white",
+        fg="black",
+        font=("Arial", 12, "bold"),
+        command=lambda: abrir_tela_gerenciar_pacientes(janela)
+    )
+    btn_gerenciar_pacientes.place(x=20, y=500, width=210, height=40)
+
+    btn_gerenciar_consultas = tk.Button(
+        sidebar,
+        text="Gerenciar Consultas",
+        bg="white",
+        fg="black",
+        font=("Arial", 12, "bold"),
+        command=lambda: abrir_tela_gerenciar_consultas(janela)
+    )
+    btn_gerenciar_consultas.place(x=20, y=550, width=210, height=40)
 
     main_content = tk.Frame(janela, bg="#f0f0f0", width=750, height=600)
     main_content.place(x=250, y=0)
@@ -182,5 +205,5 @@ def criar_tela_admin(id_usuario_admin):
     janela.mainloop()
 
 if __name__ == "__main__":
-    id_admin_logado = 1  # exemplo
-    criar_tela_admin(id_admin_logado)
+    id_admin_logado = 1
+    abrir_tela_admin(id_admin_logado)

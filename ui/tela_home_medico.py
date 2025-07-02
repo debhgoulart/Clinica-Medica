@@ -72,7 +72,7 @@ def desmarcar_consulta_db(id_consulta):
             cursor.close()
             conexao.close()
 
-def criar_tela_medico(crm_medico):
+def abrir_tela_medico(crm_medico):
     janela = tk.Tk()
     janela.title("Painel do Médico")
     janela.geometry("1000x600")
@@ -106,7 +106,6 @@ def criar_tela_medico(crm_medico):
     label_especialidade = tk.Label(sidebar, text=especialidade, bg="#00c853", fg="white", font=("Arial", 12, "italic"))
     label_especialidade.place(x=10, y=240, width=230)
     
-    # Novo label para exibir os horários
     label_horarios = tk.Label(sidebar, text=horarios, bg="#00c853", fg="white", font=("Arial", 11))
     label_horarios.place(x=10, y=270, width=230)
     
@@ -199,4 +198,4 @@ def criar_tela_medico(crm_medico):
 
 if __name__ == "__main__":
     crm_do_medico_logado = "123456/SP"
-    criar_tela_medico(crm_do_medico_logado)
+    abrir_tela_medico(crm_do_medico_logado)

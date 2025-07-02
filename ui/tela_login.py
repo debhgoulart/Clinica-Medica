@@ -3,7 +3,8 @@ from tkinter import font as tkfont
 from tkinter import ttk
 from tkinter import messagebox
 from database import conectar
-from tela_home_adm import abrir_tela_home_adm
+from tela_home_medico import abrir_tela_medico
+from tela_home_adm import abrir_tela_admin
 
 COR_FUNDO = "#FFFFFF"
 COR_PRINCIPAL = "#2E8B57"
@@ -14,9 +15,14 @@ FONTE_LABEL = ("Arial", 12)
 FONTE_BOTAO = ("Arial", 12, "bold")
 
 def fazer_login():
+
     tipo = tipo_login_combo.get().lower()
     email = email_entry.get()
     senha = senha_entry.get()
+
+    if not email or not senha or email == "Email" or senha == "Senha":
+        messagebox.showwarning("Atenção", "Por favor, preencha todos os campos.")
+        return
 
     try:
         conn = conectar()
@@ -31,19 +37,18 @@ def fazer_login():
         conn.close()
 
         if usuario:
+            janela.destroy()
+
             if usuario['tipo'] == 'administrador':
-                abrir_tela_home_adm()
+                abrir_tela_admin(usuario['id'])
+            
             elif usuario['tipo'] == 'medico':
-                messagebox.showinfo("Login", f"Login médico bem-sucedido! CRM: {usuario['medico_crm']}")
-            else:
-                messagebox.showerror("Erro", "Tipo de usuário desconhecido.")
+                abrir_tela_medico(usuario['medico_crm'])
         else:
-            messagebox.showerror("Erro", "Credenciais inválidas ou usuário inativo.")
+            messagebox.showerror("Erro de Login", "Credenciais inválidas ou usuário inativo.")
 
     except Exception as e:
-        messagebox.showerror("Erro de conexão", f"Erro ao conectar: {e}")
-
-
+        messagebox.showerror("Erro de Conexão", f"Não foi possível conectar ao banco de dados: {e}")
 
 def on_entry_click(event, entry, placeholder):
     if entry.get() == placeholder:
@@ -60,8 +65,6 @@ def on_focusout(event, entry, placeholder):
         if placeholder == 'Senha':
             entry.config(show='')
 
-
-#janela
 janela = tk.Tk()
 janela.title("Login - Clínica Médica")
 janela.geometry("400x550")
@@ -69,9 +72,8 @@ janela.configure(bg=COR_FUNDO)
 janela.resizable(False, False)
 
 main_frame = tk.Frame(janela, bg=COR_FUNDO)
-main_frame.pack(expand=True)
+main_frame.pack(expand=True, padx=20, pady=20)
 
-#componentes de tela
 logo_label = tk.Label(main_frame, text="+", font=("Arial", 60, "bold"), fg=COR_PRINCIPAL, bg=COR_FUNDO)
 logo_label.pack(pady=(0, 10))
 

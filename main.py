@@ -1,7 +1,7 @@
 import os
-import ui.tela_pacientes as tela_pacientes
-import ui.tela_medicos as tela_medicos
-import ui.tela_consulta as tela_consulta
+import ui.pacientes as pacientes
+import ui.medicos as medicos
+import ui.consulta as consulta
 from utils import limpar_tela
 
 def menu_principal():
@@ -16,13 +16,13 @@ def menu_principal():
 
         if opcao == "1":
             limpar_tela()
-            tela_pacientes.menu()
+            pacientes.menu()
         elif opcao == "2":
             limpar_tela()
-            tela_medicos.menu()
+            medicos.menu()
         elif opcao == "3":
             limpar_tela()
-            tela_consulta.menu()            
+            consulta.menu()            
         elif opcao == "4":
             print("Encerrando o sistema.")
             break
