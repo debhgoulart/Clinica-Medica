@@ -1,3 +1,4 @@
+# tela_login.py
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import ttk
@@ -6,6 +7,7 @@ from database import conectar
 from tela_home_medico import abrir_tela_medico
 from tela_home_adm import abrir_tela_admin
 
+# --- CONSTANTES DE ESTILO ---
 COR_FUNDO = "#FFFFFF"
 COR_PRINCIPAL = "#2E8B57"
 COR_TEXTO = "#000000"
@@ -13,6 +15,8 @@ COR_BOTAO_TEXTO = "#FFFFFF"
 FONTE_TITULO = ("Arial", 24, "bold")
 FONTE_LABEL = ("Arial", 12)
 FONTE_BOTAO = ("Arial", 12, "bold")
+
+# --- FUNÇÕES DE LÓGICA ---
 
 def fazer_login():
 
@@ -26,6 +30,9 @@ def fazer_login():
 
     try:
         conn = conectar()
+        if conn is None:
+            return
+
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT * FROM usuarios
@@ -33,8 +40,6 @@ def fazer_login():
         """
         cursor.execute(query, (email, senha, tipo))
         usuario = cursor.fetchone()
-        cursor.close()
-        conn.close()
 
         if usuario:
             janela.destroy()
@@ -48,9 +53,32 @@ def fazer_login():
             messagebox.showerror("Erro de Login", "Credenciais inválidas ou usuário inativo.")
 
     except Exception as e:
-        messagebox.showerror("Erro de Conexão", f"Não foi possível conectar ao banco de dados: {e}")
+        messagebox.showerror("Erro de Conexão", f"Erro ao processar o login: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def abrir_tela_de_cadastro_correta():
+    """
+    Verifica o tipo de usuário e importa a tela de cadastro correspondente
+    apenas quando a função é chamada. Isso resolve o erro de importação circular.
+    """
+    tipo_selecionado = tipo_login_combo.get()
+    
+    if tipo_selecionado == "Médico":
+        from tela_cadastro import abrir_tela_cadastro 
+        abrir_tela_cadastro(janela)
+    elif tipo_selecionado == "Administrador":
+        from tela_cadastro_adm import abrir_tela_cadastro_adm
+        abrir_tela_cadastro_adm(janela)
+    else:
+        messagebox.showwarning("Seleção Inválida", "Por favor, selecione um tipo de login para se cadastrar.")
+
 
 def on_entry_click(event, entry, placeholder):
+    """Limpa o placeholder quando o campo de entrada ganha foco."""
     if entry.get() == placeholder:
         entry.delete(0, "end")
         entry.insert(0, '')
@@ -59,6 +87,7 @@ def on_entry_click(event, entry, placeholder):
             entry.config(show='*')
 
 def on_focusout(event, entry, placeholder):
+    """Restaura o placeholder se o campo de entrada estiver vazio."""
     if entry.get() == '':
         entry.insert(0, placeholder)
         entry.config(fg='grey')
@@ -70,6 +99,15 @@ janela.title("Login - Clínica Médica")
 janela.geometry("400x550")
 janela.configure(bg=COR_FUNDO)
 janela.resizable(False, False)
+
+largura_janela = 400
+altura_janela = 550
+largura_ecra = janela.winfo_screenwidth()
+altura_ecra = janela.winfo_screenheight()
+pos_x = (largura_ecra // 2) - (largura_janela // 2)
+pos_y = (altura_ecra // 2) - (altura_janela // 2)
+janela.geometry(f'{largura_janela}x{altura_janela}+{pos_x}+{pos_y}')
+
 
 main_frame = tk.Frame(janela, bg=COR_FUNDO)
 main_frame.pack(expand=True, padx=20, pady=20)
@@ -117,6 +155,20 @@ login_button = tk.Button(
     activebackground="#3CB371",
     command=fazer_login
 )
-login_button.pack(pady=20)
+login_button.pack(pady=(20, 10))
+
+cadastro_button = tk.Button(
+    main_frame,
+    text="Cadastrar",
+    font=FONTE_BOTAO,
+    bg=COR_PRINCIPAL,
+    fg=COR_BOTAO_TEXTO,
+    relief="flat",
+    width=28,
+    pady=8,
+    activebackground="#3CB371",
+    command=abrir_tela_de_cadastro_correta
+)
+cadastro_button.pack(pady=10)
 
 janela.mainloop()
