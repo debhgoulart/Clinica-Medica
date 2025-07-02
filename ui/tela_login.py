@@ -1,10 +1,13 @@
+# tela_login.py
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import ttk
 from tkinter import messagebox
 from database import conectar
-from tela_home_adm import abrir_tela_home_adm
+# As importações das telas de cadastro foram removidas daqui
+# para evitar o erro de importação circular.
 
+# --- CONSTANTES DE ESTILO ---
 COR_FUNDO = "#FFFFFF"
 COR_PRINCIPAL = "#2E8B57"
 COR_TEXTO = "#000000"
@@ -13,13 +16,25 @@ FONTE_TITULO = ("Arial", 24, "bold")
 FONTE_LABEL = ("Arial", 12)
 FONTE_BOTAO = ("Arial", 12, "bold")
 
+# --- FUNÇÕES DE LÓGICA ---
+
 def fazer_login():
+    """Processa a tentativa de login do utilizador."""
     tipo = tipo_login_combo.get().lower()
     email = email_entry.get()
     senha = senha_entry.get()
 
+    if not email or email == "Email" or not senha or senha == "Senha":
+        messagebox.showwarning("Campos Vazios", "Por favor, preencha o email e a senha.")
+        return
+
+    conn = None
+    cursor = None
     try:
         conn = conectar()
+        if conn is None:
+            return
+
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT * FROM usuarios
@@ -27,25 +42,43 @@ def fazer_login():
         """
         cursor.execute(query, (email, senha, tipo))
         usuario = cursor.fetchone()
-        cursor.close()
-        conn.close()
 
         if usuario:
+            janela.destroy() 
             if usuario['tipo'] == 'administrador':
-                abrir_tela_home_adm()
+                messagebox.showinfo("Login", "Login de administrador bem-sucedido!")
             elif usuario['tipo'] == 'medico':
-                messagebox.showinfo("Login", f"Login médico bem-sucedido! CRM: {usuario['medico_crm']}")
-            else:
-                messagebox.showerror("Erro", "Tipo de usuário desconhecido.")
+                messagebox.showinfo("Login", f"Login médico bem-sucedido! Bem-vindo(a)!")
         else:
-            messagebox.showerror("Erro", "Credenciais inválidas ou usuário inativo.")
+            messagebox.showerror("Erro", "Credenciais inválidas ou utilizador inativo.")
 
     except Exception as e:
-        messagebox.showerror("Erro de conexão", f"Erro ao conectar: {e}")
+        messagebox.showerror("Erro de Conexão", f"Erro ao processar o login: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
+def abrir_tela_de_cadastro_correta():
+    """
+    Verifica o tipo de usuário e importa a tela de cadastro correspondente
+    apenas quando a função é chamada. Isso resolve o erro de importação circular.
+    """
+    tipo_selecionado = tipo_login_combo.get()
+    
+    if tipo_selecionado == "Médico":
+        from tela_cadastro import abrir_tela_cadastro 
+        abrir_tela_cadastro(janela)
+    elif tipo_selecionado == "Administrador":
+        from tela_cadastro_adm import abrir_tela_cadastro_adm
+        abrir_tela_cadastro_adm(janela)
+    else:
+        messagebox.showwarning("Seleção Inválida", "Por favor, selecione um tipo de login para se cadastrar.")
 
 
 def on_entry_click(event, entry, placeholder):
+    """Limpa o placeholder quando o campo de entrada ganha foco."""
     if entry.get() == placeholder:
         entry.delete(0, "end")
         entry.insert(0, '')
@@ -54,6 +87,7 @@ def on_entry_click(event, entry, placeholder):
             entry.config(show='*')
 
 def on_focusout(event, entry, placeholder):
+    """Restaura o placeholder se o campo de entrada estiver vazio."""
     if entry.get() == '':
         entry.insert(0, placeholder)
         entry.config(fg='grey')
@@ -61,17 +95,24 @@ def on_focusout(event, entry, placeholder):
             entry.config(show='')
 
 
-#janela
 janela = tk.Tk()
 janela.title("Login - Clínica Médica")
 janela.geometry("400x550")
 janela.configure(bg=COR_FUNDO)
 janela.resizable(False, False)
 
-main_frame = tk.Frame(janela, bg=COR_FUNDO)
-main_frame.pack(expand=True)
+largura_janela = 400
+altura_janela = 550
+largura_ecra = janela.winfo_screenwidth()
+altura_ecra = janela.winfo_screenheight()
+pos_x = (largura_ecra // 2) - (largura_janela // 2)
+pos_y = (altura_ecra // 2) - (altura_janela // 2)
+janela.geometry(f'{largura_janela}x{altura_janela}+{pos_x}+{pos_y}')
 
-#componentes de tela
+
+main_frame = tk.Frame(janela, bg=COR_FUNDO)
+main_frame.pack(expand=True, padx=20, pady=20)
+
 logo_label = tk.Label(main_frame, text="+", font=("Arial", 60, "bold"), fg=COR_PRINCIPAL, bg=COR_FUNDO)
 logo_label.pack(pady=(0, 10))
 
@@ -115,6 +156,20 @@ login_button = tk.Button(
     activebackground="#3CB371",
     command=fazer_login
 )
-login_button.pack(pady=20)
+login_button.pack(pady=(20, 10))
+
+cadastro_button = tk.Button(
+    main_frame,
+    text="Cadastrar",
+    font=FONTE_BOTAO,
+    bg=COR_PRINCIPAL,
+    fg=COR_BOTAO_TEXTO,
+    relief="flat",
+    width=28,
+    pady=8,
+    activebackground="#3CB371",
+    command=abrir_tela_de_cadastro_correta
+)
+cadastro_button.pack(pady=10)
 
 janela.mainloop()
