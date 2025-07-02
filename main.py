@@ -4,6 +4,12 @@ import ui.medicos as medicos
 import ui.consulta as consulta
 from utils import limpar_tela
 
+#INTEGRANTES:
+
+#DEBORAH DE OLIVEIRA GOULART - 1230112548
+#GUILHERME MONTEIRO DE OLIVEIRA - 1230113382
+#GUSTAVO FERNANDES BARBOSA - 1230116985
+
 def menu_principal():
     while True:
         limpar_tela()

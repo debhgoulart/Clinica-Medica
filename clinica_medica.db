@@ -40,6 +40,69 @@ CREATE TABLE usuarios (
     FOREIGN KEY (medico_crm) REFERENCES medicos(crm)
 );
 
---usuario admin fixo
+#usuario admin fixo
 INSERT INTO usuarios (email, senha, tipo, medico_crm)
 VALUES ('admin@clinica.com', 'admin', 'administrador', NULL);
+
+#inserts
+INSERT INTO medicos (crm, nome, especialidade, horarios)
+VALUES 
+('12345-SP', 'Dra. Ana Souza', 'Cardiologia', 'Seg-Sex 08:00-12:00'),
+('23456-SP', 'Dr. Pedro Lima', 'Ortopedia', 'Seg-Qua-Sex 13:00-17:00'),
+('34567-SP', 'Dra. Carla Dias', 'Dermatologia', 'Ter-Qui 09:00-14:00'),
+('45678-SP', 'Dr. João Mendes', 'Clínico Geral', 'Seg-Sex 08:00-18:00');
+
+INSERT INTO pacientes (cpf, nome, nascimento, telefone, endereco)
+VALUES 
+('111.111.111-11', 'Maria Oliveira', '1985-03-12', '(11) 99999-1111', 'Rua A, 123'),
+('222.222.222-22', 'Carlos Silva', '1990-07-25', '(11) 98888-2222', 'Rua B, 456'),
+('333.333.333-33', 'Ana Beatriz', '2000-11-05', '(11) 97777-3333', 'Rua C, 789'),
+('444.444.444-44', 'Fernando Costa', '1978-01-30', '(11) 96666-4444', 'Rua D, 101'),
+('555.555.555-55', 'Juliana Lima', '1995-06-18', '(11) 95555-5555', 'Rua E, 202');
+
+INSERT INTO consultas (paciente_cpf, medico_crm, data_consulta, horario_consulta, observacoes)
+VALUES
+('111.111.111-11', '12345-SP', '2025-07-05', '09:00:00', 'Retorno de exame'),
+('222.222.222-22', '23456-SP', '2025-07-06', '14:30:00', 'Consulta ortopédica'),
+('333.333.333-33', '34567-SP', '2025-07-10', '10:15:00', 'Avaliação dermatológica'),
+('444.444.444-44', '45678-SP', '2025-07-08', '11:00:00', 'Check-up geral');
+
+INSERT INTO consultas (paciente_cpf, medico_crm, data_consulta, horario_consulta, observacoes, ativo)
+VALUES
+('555.555.555-55', '12345-SP', '2025-06-15', '08:30:00', 'Exame de rotina', FALSE),
+('111.111.111-11', '23456-SP', '2025-06-10', '15:00:00', 'Dor no joelho', FALSE),
+('222.222.222-22', '34567-SP', '2025-06-20', '10:00:00', 'Manchas na pele', FALSE),
+('333.333.333-33', '45678-SP', '2025-06-25', '09:45:00', 'Acompanhamento clínico', FALSE);
+
+INSERT INTO medicos (crm, nome, especialidade, horarios) VALUES
+('56789-SP', 'Dra. Fernanda Torres', 'Cardiologia', 'Seg-Qua 08:00-12:00'),
+('67890-SP', 'Dr. Marcelo Andrade', 'Ortopedia', 'Ter-Qui 14:00-18:00'),
+('78901-SP', 'Dra. Bianca Rocha', 'Dermatologia', 'Seg-Sex 10:00-16:00'),
+('89012-SP', 'Dr. Renato Faria', 'Clínico Geral', 'Seg-Sex 08:00-17:00');
+
+INSERT INTO pacientes (cpf, nome, nascimento, telefone, endereco) VALUES
+('666.666.666-66', 'Lucas Almeida', '1982-12-14', '(11) 94444-6666', 'Rua F, 303'),
+('777.777.777-77', 'Patrícia Gomes', '1993-04-22', '(11) 93333-7777', 'Rua G, 404'),
+('888.888.888-88', 'Roberto Nunes', '1987-09-08', '(11) 92222-8888', 'Rua H, 505'),
+('999.999.999-99', 'Carla Figueiredo', '2001-02-19', '(11) 91111-9999', 'Rua I, 606'),
+('000.000.000-00', 'Bruno Martins', '1975-05-10', '(11) 90000-0000', 'Rua J, 707');
+
+INSERT INTO consultas (paciente_cpf, medico_crm, data_consulta, horario_consulta, observacoes) VALUES
+('666.666.666-66', '12345-SP', '2025-07-10', '09:30:00', 'Check-up cardiológico'),
+('777.777.777-77', '56789-SP', '2025-07-12', '10:00:00', 'Eletrocardiograma'),
+('888.888.888-88', '23456-SP', '2025-07-15', '15:00:00', 'Dor lombar'),
+('999.999.999-99', '67890-SP', '2025-07-16', '14:45:00', 'Consulta ortopédica'),
+('000.000.000-00', '34567-SP', '2025-07-18', '11:00:00', 'Irritação na pele'),
+('111.111.111-11', '78901-SP', '2025-07-19', '13:30:00', 'Avaliação estética'),
+('222.222.222-22', '45678-SP', '2025-07-20', '09:00:00', 'Retorno clínico'),
+('333.333.333-33', '89012-SP', '2025-07-21', '08:45:00', 'Consulta de rotina');
+
+INSERT INTO consultas (paciente_cpf, medico_crm, data_consulta, horario_consulta, observacoes, ativo) VALUES
+('444.444.444-44', '56789-SP', '2025-06-10', '09:00:00', 'Exame cardíaco', FALSE),
+('555.555.555-55', '67890-SP', '2025-06-08', '15:30:00', 'Tratamento ortopédico', FALSE),
+('666.666.666-66', '34567-SP', '2025-06-12', '10:30:00', 'Consulta dermatológica', FALSE),
+('777.777.777-77', '78901-SP', '2025-06-18', '11:15:00', 'Revisão de manchas', FALSE),
+('888.888.888-88', '45678-SP', '2025-06-14', '08:45:00', 'Exame de rotina', FALSE),
+('999.999.999-99', '89012-SP', '2025-06-20', '10:00:00', 'Consulta geral', FALSE),
+('000.000.000-00', '12345-SP', '2025-06-22', '09:15:00', 'Retorno pós-tratamento', FALSE),
+('111.111.111-11', '23456-SP', '2025-06-25', '14:00:00', 'Reabilitação', FALSE);
