@@ -1,4 +1,3 @@
-# tela_login.py
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import ttk
@@ -7,7 +6,6 @@ from database import conectar
 from tela_home_medico import abrir_tela_medico
 from tela_home_adm import abrir_tela_admin
 
-# --- CONSTANTES DE ESTILO ---
 COR_FUNDO = "#FFFFFF"
 COR_PRINCIPAL = "#2E8B57"
 COR_TEXTO = "#000000"
@@ -15,8 +13,6 @@ COR_BOTAO_TEXTO = "#FFFFFF"
 FONTE_TITULO = ("Arial", 24, "bold")
 FONTE_LABEL = ("Arial", 12)
 FONTE_BOTAO = ("Arial", 12, "bold")
-
-# --- FUNÇÕES DE LÓGICA ---
 
 def fazer_login():
 
@@ -61,10 +57,6 @@ def fazer_login():
             conn.close()
 
 def abrir_tela_de_cadastro_correta():
-    """
-    Verifica o tipo de usuário e importa a tela de cadastro correspondente
-    apenas quando a função é chamada. Isso resolve o erro de importação circular.
-    """
     tipo_selecionado = tipo_login_combo.get()
     
     if tipo_selecionado == "Médico":
@@ -78,7 +70,6 @@ def abrir_tela_de_cadastro_correta():
 
 
 def on_entry_click(event, entry, placeholder):
-    """Limpa o placeholder quando o campo de entrada ganha foco."""
     if entry.get() == placeholder:
         entry.delete(0, "end")
         entry.insert(0, '')
@@ -87,7 +78,6 @@ def on_entry_click(event, entry, placeholder):
             entry.config(show='*')
 
 def on_focusout(event, entry, placeholder):
-    """Restaura o placeholder se o campo de entrada estiver vazio."""
     if entry.get() == '':
         entry.insert(0, placeholder)
         entry.config(fg='grey')

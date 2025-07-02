@@ -1,10 +1,8 @@
-# tela_cadastro_adm.py
 import tkinter as tk
 from tkinter import messagebox
 from database import conectar
 import mysql.connector
 
-# --- CONSTANTES DE ESTILO (Mesmas do login) ---
 COR_FUNDO = "#FFFFFF"
 COR_PRINCIPAL = "#2E8B57"
 COR_TEXTO = "#000000"
@@ -13,12 +11,7 @@ FONTE_TITULO = ("Arial", 24, "bold")
 FONTE_LABEL = ("Arial", 12)
 FONTE_BOTAO = ("Arial", 12, "bold")
 
-# --- FUNÇÕES DE LÓGICA ---
-
 def cadastrar_administrador():
-    """
-    Coleta os dados dos campos e insere um novo administrador no banco de dados.
-    """
     email = email_entry.get()
     senha = senha_entry.get()
 
@@ -41,7 +34,7 @@ def cadastrar_administrador():
         conn.commit()
 
         messagebox.showinfo("Sucesso", "Administrador cadastrado com sucesso!")
-        tela_adm.destroy() # Fecha a janela de cadastro
+        tela_adm.destroy()
 
     except mysql.connector.Error as err:
         messagebox.showerror("Erro no Cadastro", f"Ocorreu um erro: {err}")
@@ -54,7 +47,6 @@ def cadastrar_administrador():
             conn.close()
 
 def on_entry_click(event, entry, placeholder):
-    """Limpa o placeholder quando o campo de entrada ganha foco."""
     if entry.get() == placeholder:
         entry.delete(0, "end")
         entry.config(fg='black')
@@ -62,7 +54,6 @@ def on_entry_click(event, entry, placeholder):
             entry.config(show='*')
 
 def on_focusout(event, entry, placeholder):
-    """Restaura o placeholder se o campo de entrada estiver vazio."""
     if entry.get() == '':
         entry.insert(0, placeholder)
         entry.config(fg='grey')
@@ -70,7 +61,6 @@ def on_focusout(event, entry, placeholder):
             entry.config(show='')
 
 def abrir_tela_cadastro_adm(janela_pai):
-    """Cria e exibe a janela de cadastro de administrador."""
     global tela_adm, email_entry, senha_entry
     
     tela_adm = tk.Toplevel(janela_pai)
@@ -84,7 +74,6 @@ def abrir_tela_cadastro_adm(janela_pai):
     main_frame = tk.Frame(tela_adm, bg=COR_FUNDO)
     main_frame.pack(expand=True, padx=20, pady=20)
 
-    # --- WIDGETS ---
     title_label = tk.Label(main_frame, text="Cadastro de ADM", font=FONTE_TITULO, fg=COR_TEXTO, bg=COR_FUNDO)
     title_label.pack(pady=(0, 20))
 
