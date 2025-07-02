@@ -1,5 +1,5 @@
 import os
-from database import conectar
+from ui.database import conectar
 from mysql.connector import Error
 from utils import limpar_tela
 from datetime import datetime

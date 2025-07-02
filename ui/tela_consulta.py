@@ -1,7 +1,7 @@
 from utils import limpar_tela
 import ui.tela_pacientes as tela_pacientes
 import ui.tela_medicos as tela_medicos
-from database import conectar
+from ui.database import conectar
 from mysql.connector import Error
 from datetime import datetime
 

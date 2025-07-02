@@ -8,9 +8,7 @@ def buscar_info_medico(crm):
     if conexao is None:
         return None
     
-    # O cursor agora retorna tuplas em vez de dicionários
     cursor = conexao.cursor()
-    # Query atualizada para buscar também os horários
     query = "SELECT nome, crm, especialidade, horarios FROM medicos WHERE crm = %s"
     cursor.execute(query, (crm,))
     medico = cursor.fetchone()
@@ -24,9 +22,7 @@ def buscar_consultas(crm):
     if conexao is None:
         return [], []
 
-    # O cursor agora retorna tuplas em vez de dicionários
     cursor = conexao.cursor()
-    # A ordem no SELECT é importante: 0:id, 1:data, 2:horario, 3:nome_paciente
     query = """
         SELECT c.id, c.data_consulta, c.horario_consulta, p.nome AS nome_paciente
         FROM consultas c
@@ -41,13 +37,11 @@ def buscar_consultas(crm):
     data_hoje = datetime.now().date()
 
     for consulta in consultas:
-        # Acessando os dados por índice
         data_da_consulta = consulta[1]
         if data_da_consulta:
             data_formatada = data_da_consulta.strftime('%d/%m/%Y')
             info_str = f"{data_formatada} às {str(consulta[2])} - Paciente: {consulta[3]}"
             
-            # Criamos um dicionário para guardar o ID e o texto da consulta
             dados_consulta = {'id': consulta[0], 'info_str': info_str}
 
             if data_da_consulta >= data_hoje:
@@ -88,13 +82,11 @@ def criar_tela_medico(crm_medico):
     sidebar = tk.Frame(janela, bg="#00c853", width=250, height=600)
     sidebar.place(x=0, y=0)
 
-    # Ícone de "+" no lugar do círculo
     label_icone = tk.Label(sidebar, text="+", font=("Arial", 80), bg="#00c853", fg="white")
     label_icone.place(relx=0.5, y=90, anchor="center")
     
     medico = buscar_info_medico(crm_medico)
     if medico:
-        # Acessando os dados por índice
         nome_medico = medico[0]
         crm = medico[1]
         especialidade = medico[2]
@@ -114,7 +106,6 @@ def criar_tela_medico(crm_medico):
     label_especialidade = tk.Label(sidebar, text=especialidade, bg="#00c853", fg="white", font=("Arial", 12, "italic"))
     label_especialidade.place(x=10, y=240, width=230)
     
-    # Novo label para exibir os horários
     label_horarios = tk.Label(sidebar, text=horarios, bg="#00c853", fg="white", font=("Arial", 11))
     label_horarios.place(x=10, y=270, width=230)
     
@@ -147,7 +138,6 @@ def criar_tela_medico(crm_medico):
     scrollbar_finalizadas.pack(side="right", fill="y")
     listbox_finalizadas.config(yscrollcommand=scrollbar_finalizadas.set)
 
-    # Armazenamos os dados completos aqui para podermos pegar o ID depois
     dados_consultas_realizar = []
 
     def atualizar_listas():
@@ -168,7 +158,7 @@ def criar_tela_medico(crm_medico):
         janela_conf.title("Confirmar Ação")
         janela_conf.geometry("350x120")
         janela_conf.resizable(False, False)
-        janela_conf.transient(janela) # Mantém a janela no topo
+        janela_conf.transient(janela)
 
         label = tk.Label(janela_conf, text="Tem certeza que deseja desmarcar esta consulta?", wraplength=300)
         label.pack(pady=20)

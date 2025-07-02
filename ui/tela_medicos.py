@@ -1,5 +1,5 @@
 from utils import limpar_tela
-from database import conectar
+from ui.database import conectar
 from mysql.connector import Error
 
 def cadastrar_medico():
